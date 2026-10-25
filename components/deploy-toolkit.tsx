@@ -45,7 +45,8 @@ function DeployToolUI({
     }
   };
 
-  if (isError) {
+  // A denied call also arrives with isError set; the approval card below shows it as Denied.
+  if (isError && approval?.approved !== false) {
     return (
       <ToolError
         className="my-2"

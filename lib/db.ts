@@ -84,9 +84,19 @@ export function upsertMessage(threadId: string, m: MessageBody) {
 
 export type DeploymentRow = { id: number; target: string; version: string; created_at: number };
 
+// Staging ships a new build. Production promotes whatever is on staging, so the
+// version stays the same; with nothing on staging yet it ships a new build too.
 export function recordDeployment(target: string) {
-  const count = (db.prepare("SELECT COUNT(*) AS n FROM deployments").get() as { n: number }).n;
-  const version = `v1.${count + 1}.0`;
+  const onStaging =
+    target === "production"
+      ? (
+          db.prepare("SELECT version FROM deployments WHERE target = 'staging' ORDER BY created_at DESC LIMIT 1").get() as
+            | { version: string }
+            | undefined
+        )?.version
+      : undefined;
+  const builds = (db.prepare("SELECT COUNT(DISTINCT version) AS n FROM deployments").get() as { n: number }).n;
+  const version = onStaging ?? `v1.${builds + 1}.0`;
   const createdAt = Date.now();
   const { lastInsertRowid } = db
     .prepare("INSERT INTO deployments (target, version, created_at) VALUES (?, ?, ?)")
