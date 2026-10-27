@@ -4,6 +4,7 @@ import { AppComposer } from "@/components/app-composer";
 import { Thread, type ThreadComponents } from "@/components/assistant-ui/elements/thread.aui";
 import { ThreadListSidebar } from "@/components/assistant-ui/elements/threadlist-sidebar.aui";
 import { toolkit } from "@/components/deploy-toolkit";
+import { TurnActivity } from "@/components/turn-activity";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { threadListAdapter } from "@/lib/thread-adapter";
 import { useChatRuntime } from "@assistant-ui/ai-sdk";
@@ -34,7 +35,8 @@ function useDictation() {
   return supported ? dictation : undefined;
 }
 
-const THREAD_COMPONENTS: ThreadComponents = { Composer: AppComposer };
+// Reasoning and tool calls render as one activity timeline per run (see turn-activity.tsx).
+const THREAD_COMPONENTS: ThreadComponents = { Composer: AppComposer, Activity: TurnActivity };
 
 function useThreadRuntime() {
   const dictation = useDictation();

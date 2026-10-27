@@ -106,12 +106,22 @@ export type ThreadComponents = {
     | ComponentType<PropsWithChildren<{ group: ThreadGroupPart }>>
     | undefined;
   TaskGroup?: ComponentType<{ group: ThreadGroupPart }> | undefined;
+  /**
+   * Renders each run of adjacent reasoning and tool calls (standalone tools
+   * included) as one block, in place of the reasoning and tool groups.
+   */
+  Activity?: ComponentType<{ group: ThreadGroupPart }> | undefined;
 };
 
 const messageGroupBy = groupPartByType({
   reasoning: ["group-chainOfThought", "group-reasoning"],
   "tool-call": ["group-chainOfThought", "group-tool"],
   "standalone-tool-call": [],
+});
+
+const activityGroupBy = groupPartByType({
+  reasoning: ["group-chainOfThought"],
+  "tool-call": ["group-chainOfThought"],
 });
 
 type ThreadGroupKey =
@@ -647,8 +657,13 @@ const AssistantMessage: FC = () => {
     ToolGroup,
     ReasoningGroup,
     TaskGroup: TaskGroupComponent,
+    Activity,
   } = useContext(ThreadComponentsContext);
-  const groupBy = TaskGroupComponent ? taskAwareGroupBy : messageGroupBy;
+  const groupBy = Activity
+    ? activityGroupBy
+    : TaskGroupComponent
+      ? taskAwareGroupBy
+      : messageGroupBy;
 
   const ACTION_BAR_PT = "pt-1.5";
   // Keep the action bar inside the contained root's paint box, then cancel its reserved space in flow.
@@ -668,6 +683,7 @@ const AssistantMessage: FC = () => {
           {({ part, children }) => {
             switch (part.type) {
               case "group-chainOfThought":
+                if (Activity) return <Activity group={part} />;
                 return <div data-slot="aui_chain-of-thought">{children}</div>;
               case "group-task":
                 return TaskGroupComponent ? (
