@@ -13,11 +13,13 @@ import {
   SimpleImageAttachmentAdapter,
   ThreadListItemPrimitive,
   Tools,
+  useAuiState,
   useRemoteThreadListRuntime,
   WebSpeechDictationAdapter,
 } from "@assistant-ui/react";
 import { lastAssistantMessageIsCompleteWithApprovalResponses } from "ai";
-import { useSyncExternalStore } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useSyncExternalStore } from "react";
 
 // Images, sent to the model as file parts and stored with the message.
 const attachments = new SimpleImageAttachmentAdapter();
@@ -42,13 +44,41 @@ function useThreadRuntime() {
   });
 }
 
+// The open thread lives in ?thread=<id>, so a reload or a shared link reopens it.
+// A thread that just got its id replaces the bare URL; switching threads adds a history entry.
+function syncThreadToUrl(threadId: string | undefined) {
+  const url = threadId ? `?thread=${encodeURIComponent(threadId)}` : window.location.pathname;
+  const hadThread = new URLSearchParams(window.location.search).has("thread");
+  if (hadThread) window.history.pushState(null, "", url);
+  else window.history.replaceState(null, "", url);
+}
+
+// A ?thread= link to a thread that no longer exists opens a new chat instead.
+// Drop the stale id so the runtime stops retrying it.
+function ClearStaleThreadParam() {
+  const failedId = useAuiState((s) => s.threads.switchError?.threadId);
+  useEffect(() => {
+    if (failedId && new URLSearchParams(window.location.search).get("thread") === failedId) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, [failedId]);
+  return null;
+}
+
 export function ChatApp() {
+  const threadId = useSearchParams().get("thread") ?? undefined;
   // Threads and messages live in local SQLite (see lib/thread-adapter.ts).
-  const runtime = useRemoteThreadListRuntime({ runtimeHook: useThreadRuntime, adapter: threadListAdapter });
+  const runtime = useRemoteThreadListRuntime({
+    runtimeHook: useThreadRuntime,
+    adapter: threadListAdapter,
+    threadId,
+    onThreadIdChange: syncThreadToUrl,
+  });
   const config = AuiConfig({ tools: Tools({ toolkit }) });
 
   return (
     <AssistantRuntimeProvider runtime={runtime} config={config}>
+      <ClearStaleThreadParam />
       <SidebarProvider>
         <ThreadListSidebar />
         <SidebarInset className="h-dvh">

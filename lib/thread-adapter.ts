@@ -87,7 +87,9 @@ export const threadListAdapter: RemoteThreadListAdapter = {
     await fetch(`/api/threads/${remoteId}`, { method: "DELETE" });
   },
   async fetch(remoteId) {
-    const t = await fetch(`/api/threads/${remoteId}`).then((r) => r.json());
+    const res = await fetch(`/api/threads/${remoteId}`);
+    if (!res.ok) throw new Error(`Thread ${remoteId} not found`);
+    const t = await res.json();
     return { remoteId: t.id, status: t.status, title: t.title ?? undefined };
   },
   async generateTitle(remoteId, messages) {
