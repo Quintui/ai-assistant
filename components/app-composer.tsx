@@ -289,8 +289,13 @@ export function AppComposer({ autoFocus }: { autoFocus: boolean }) {
           </ComposerPrimitive.TriggerPopoverItems>
         </ComposerPrimitive.TriggerPopover>
 
-        <ComposerPrimitive.Root className={cn(paper, "flex w-full flex-col gap-2 rounded-[24px] p-2.5 shadow-xs")}>
-          <ComposerPrimitive.AttachmentDropzone className="flex flex-col gap-2 rounded-[18px] data-[dragging=true]:bg-blue-500/[0.04]">
+        <ComposerPrimitive.Root
+          className={cn(
+            paper,
+            "focus-within:border-signal/35 flex w-full flex-col gap-2 rounded-xl p-2 shadow-[0_8px_30px_-12px_oklch(0_0_0/60%)] transition-[border-color,box-shadow] focus-within:shadow-[0_0_0_4px_oklch(0.9_0.2_124/7%),0_8px_30px_-12px_oklch(0_0_0/60%)]",
+          )}
+        >
+          <ComposerPrimitive.AttachmentDropzone className="flex flex-col gap-2 rounded-lg data-[dragging=true]:bg-signal/[0.04]">
             <AuiIf condition={(s) => s.composer.attachments.length > 0}>
               <ComposerAttachments className="px-1 pt-1">
                 <ComposerPrimitive.Attachments>{() => <AttachmentChip />}</ComposerPrimitive.Attachments>
@@ -299,13 +304,18 @@ export function AppComposer({ autoFocus }: { autoFocus: boolean }) {
             <AuiIf condition={(s) => s.composer.dictation != null}>
               <DictationWaveform />
             </AuiIf>
-            <ComposerPrimitive.Input
-              placeholder="Ask anything, or type / for commands"
-              rows={1}
-              autoFocus={autoFocus}
-              aria-label="Message input"
-              className="placeholder:text-muted-foreground max-h-48 min-h-11 w-full resize-none bg-transparent px-3 py-2.5 text-[15px] caret-blue-500 outline-none dark:caret-blue-400"
-            />
+            <div className="flex items-start">
+              <span aria-hidden className="text-signal ps-3 pt-[11px] font-mono text-[15px] leading-6 select-none">
+                ›
+              </span>
+              <ComposerPrimitive.Input
+                placeholder="Ask about a deploy, or type /"
+                rows={1}
+                autoFocus={autoFocus}
+                aria-label="Message input"
+                className="placeholder:text-muted-foreground/70 caret-signal max-h-48 min-h-11 w-full resize-none bg-transparent px-2.5 py-2.5 text-[15px] leading-6 outline-none"
+              />
+            </div>
           </ComposerPrimitive.AttachmentDropzone>
 
           <ComposerToolbar>

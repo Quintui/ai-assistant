@@ -3,14 +3,17 @@
 @import "shadcn/tailwind.css";
 @import "tw-shimmer";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *, :root:has([data-theme="control-room"]) *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
+  --font-heading: var(--app-font-sans);
+  --color-signal: var(--signal);
+  --color-signal-foreground: var(--signal-foreground);
+  --color-caution: var(--caution);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -66,6 +69,11 @@
 }
 
 :root {
+  --app-font-sans: var(--font-geist-sans);
+  --app-font-mono: var(--font-geist-mono);
+  --signal: oklch(0.205 0 0);
+  --signal-foreground: oklch(0.985 0 0);
+  --caution: oklch(0.75 0.15 70);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -132,6 +140,66 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/*
+ * Control room: the main app's theme. Graphite surfaces, one signal accent,
+ * IBM Plex type. Scoped with :has() so the demo pages keep the stock look and
+ * portaled menus and tooltips still pick it up.
+ */
+:root:has([data-theme="control-room"]) {
+  color-scheme: dark;
+  --app-font-sans: var(--font-plex-sans);
+  --app-font-mono: var(--font-plex-mono);
+  --signal: oklch(0.9 0.2 124);
+  --signal-foreground: oklch(0.2 0.03 124);
+  --caution: oklch(0.8 0.14 75);
+  --radius: 0.5rem;
+
+  --background: oklch(0.165 0.004 260);
+  --foreground: oklch(0.94 0.004 260);
+  --card: oklch(0.195 0.005 260);
+  --card-foreground: oklch(0.94 0.004 260);
+  --popover: oklch(0.205 0.005 260);
+  --popover-foreground: oklch(0.94 0.004 260);
+  --primary: var(--signal);
+  --primary-foreground: var(--signal-foreground);
+  --secondary: oklch(0.23 0.006 260);
+  --secondary-foreground: oklch(0.94 0.004 260);
+  --muted: oklch(0.215 0.005 260);
+  --muted-foreground: oklch(0.67 0.01 260);
+  --accent: oklch(0.235 0.006 260);
+  --accent-foreground: oklch(0.96 0.004 260);
+  --destructive: oklch(0.68 0.19 25);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 11%);
+  --ring: oklch(0.9 0.2 124 / 55%);
+  --chart-1: var(--signal);
+  --chart-2: oklch(0.75 0.12 200);
+  --chart-3: oklch(0.8 0.14 75);
+  --chart-4: oklch(0.7 0.15 300);
+  --chart-5: oklch(0.67 0.01 260);
+  --sidebar: oklch(0.14 0.004 260);
+  --sidebar-foreground: oklch(0.9 0.004 260);
+  --sidebar-primary: var(--signal);
+  --sidebar-primary-foreground: var(--signal-foreground);
+  --sidebar-accent: oklch(0.205 0.005 260);
+  --sidebar-accent-foreground: oklch(0.96 0.004 260);
+  --sidebar-border: oklch(1 0 0 / 7%);
+  --sidebar-ring: oklch(0.9 0.2 124 / 55%);
+}
+
+:root:has([data-theme="control-room"]) ::selection {
+  background: oklch(0.9 0.2 124 / 28%);
+}
+
+/* A faint hairline grid behind the conversation, fading out toward the composer. */
+.control-room-grid {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 2.5%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 2.5%) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
 }
 
 @layer base {
