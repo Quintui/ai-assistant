@@ -74,7 +74,7 @@ export function ToolCall({
         </span>
       </CollapsibleTrigger>
       <CollapsibleContent className={cn(collapsePanel, "outline-none")}>
-        <div className={cn(field, "mt-2 overflow-hidden rounded-2xl text-xs")}>
+        <div className={cn(field, "mt-2 overflow-hidden rounded-[12px] text-xs")}>
           <div className="px-3.5 pt-2.5 pb-2">
             <p className={cn(mono, "text-muted-foreground mb-1")}>Request</p>
             <p className="text-muted-foreground font-mono break-words">

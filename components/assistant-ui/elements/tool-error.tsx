@@ -42,7 +42,7 @@ export function ToolError({
       data-slot="tool-error"
       className={cn(
         paper,
-        "flex w-full max-w-sm flex-col gap-3 rounded-2xl p-3.5",
+        "flex w-full max-w-sm flex-col gap-3 rounded-[12px] p-3.5",
         className,
       )}
 
@@ -68,7 +68,7 @@ export function ToolError({
       <div
         className={cn(
           field,
-          "rounded-xl px-3 py-2 font-mono text-[11px] leading-relaxed break-words text-red-700 dark:text-red-300",
+          "rounded-xl px-3 py-2 font-mono text-[13px] leading-relaxed break-words text-red-700 dark:text-red-300",
         )}
       >
         {message}

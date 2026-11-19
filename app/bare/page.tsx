@@ -15,7 +15,7 @@ export default function BareChat() {
       <div className="flex-1 space-y-4 overflow-y-auto">
         {messages.map((m) => (
           <div key={m.id}>
-            <div className="text-xs font-semibold uppercase text-zinc-500">{m.role}</div>
+            <div className="text-ink-2 font-mono text-xs uppercase">{m.role}</div>
             {m.parts.map((part, i) => {
               if (part.type === "text") {
                 return (
@@ -26,7 +26,7 @@ export default function BareChat() {
               }
               if (part.type.startsWith("tool-")) {
                 return (
-                  <pre key={i} className="overflow-x-auto bg-zinc-100 p-2 text-xs dark:bg-zinc-900">
+                  <pre key={i} className="bg-surface-2 overflow-x-auto rounded-[8px] p-3 text-xs">
                     {JSON.stringify(part, null, 2)}
                   </pre>
                 );
@@ -38,11 +38,11 @@ export default function BareChat() {
       </div>
 
       <div className="flex gap-2 pt-2">
-        <button onClick={() => regenerate()} disabled={busy || messages.length === 0} className="border px-3 py-2 disabled:opacity-40">
+        <button onClick={() => regenerate()} disabled={busy || messages.length === 0} className="border-line-2 rounded-[8px] border px-3 py-2 disabled:opacity-40">
           Regenerate
         </button>
         {busy && (
-          <button onClick={() => stop()} className="border px-3 py-2">
+          <button onClick={() => stop()} className="border-line-2 rounded-[8px] border px-3 py-2">
             Stop
           </button>
         )}
@@ -61,7 +61,7 @@ export default function BareChat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Say something…"
-          className="w-full border px-3 py-2"
+          className="border-line-2 w-full rounded-[8px] border px-3 py-2"
         />
       </form>
     </main>

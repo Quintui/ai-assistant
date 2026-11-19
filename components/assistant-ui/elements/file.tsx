@@ -343,7 +343,7 @@ const FileImpl: FileMessagePartComponent = ({
               bytes={
                 kind === "data-uri" ? getDataUrlSize(data) : getBase64Size(data)
               }
-              className="text-muted-foreground text-[11px]"
+              className="text-muted-foreground text-[13px]"
             />
           )}
           <FileDownload

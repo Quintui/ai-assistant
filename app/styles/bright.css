@@ -1,0 +1,498 @@
+/* Bright UI: the UI of Kristian's demo apps, matching the edit (the bright ASCII style).
+ * FLAT (19 Nov 2026): one plane, surfaces one tone step apart with a hairline, no glass, no rims, no drop shadows,
+ * controls as plain text with a line icon and a chevron. The illustration (blur + ASCII / halftone / dither) lives in
+ * the background, full-bleed, bleeding off the edges. SF Pro + SF Mono, ONE accent (blue), sizes that read on a phone.
+ * Kristian: "I don't like this glassy-looking Apple-style buttons that pop up out of the UI … it should be more flat
+ * … but with blurs and things like that." Plain CSS: any React / Next / Vite app. Rules: GUIDELINES.md.
+ */
+
+/* ------------------------------------------------------------------ tokens */
+:root {
+  /* planes: the app is one plane; each step is one small tone apart */
+  --b-bg: #f4f4f1;              /* the app plane: sidebar and window chrome */
+  --b-surface: #fbfbf9;         /* the main area: content sits straight on it */
+  --b-surface-2: #f1f1ee;       /* one step: panels, user messages, code, inputs at rest */
+  --b-fill: rgba(0, 0, 0, 0.045);        /* hover, the active row, selected tab */
+  --b-fill-2: rgba(0, 0, 0, 0.075);      /* pressed */
+
+  /* labels */
+  --b-ink: #1c1c1e;             /* primary text */
+  --b-ink-2: #66666b;           /* secondary text: 5.4:1 on the surface */
+  --b-ink-3: #8c8c91;           /* tertiary: placeholders, the dim half of a two-tone headline, ≥ 20 px or decoration */
+  --b-line: rgba(0, 0, 0, 0.08);         /* hairlines between planes and rows */
+  --b-line-2: rgba(0, 0, 0, 0.13);       /* the composer's and fields' border */
+
+  /* the one accent */
+  --b-accent: #0071e3;          /* fills with white text, links: 4.6:1 */
+  --b-accent-bright: #0a84ff;   /* the edit's blue: highlights, focus rings, charts, the one big number */
+  --b-accent-soft: rgba(10, 132, 255, 0.12);
+  --b-on-accent: #ffffff;
+
+  /* meaning only */
+  --b-good: #248a3d;
+  --b-good-soft: rgba(52, 199, 89, 0.14);
+  --b-bad: #d70015;
+  --b-bad-soft: rgba(255, 59, 48, 0.12);
+  --b-warn: #b25000;
+  --b-warn-soft: rgba(255, 149, 0, 0.14);
+
+  /* the one place blur is allowed on a surface: a flat panel over the illustration (the composer, a data card).
+     Flat: no rim, no shadow. There are no glass or shadow tokens in v2. */
+  --b-veil: color-mix(in srgb, var(--b-surface) 82%, transparent);
+  --b-veil-blur: blur(18px) saturate(115%);
+
+  /* smoke: pills and rows that sit ON an illustration (BlurAscii). A blur of what's behind, darkened; no rim. */
+  --b-smoke-tint: rgba(24, 22, 34, 0.22);
+  --b-smoke-blur: blur(36px) saturate(120%) brightness(0.76);
+  --b-smoke-edge: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --b-on-smoke: #ffffff;
+  --b-on-smoke-2: rgba(255, 255, 255, 0.74);
+
+  /* type */
+  --b-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", system-ui, sans-serif;
+  --b-mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, monospace;
+  --b-t-caption: 13px;   /* labels, meta (never smaller) */
+  --b-t-small: 15px;     /* secondary text, rows, controls */
+  --b-t-body: 17px;      /* body, messages, inputs */
+  --b-t-title: 22px;     /* section titles */
+  --b-t-headline: 40px;  /* page headline */
+  --b-t-display: 56px;   /* one big number or statement */
+
+  /* space (4-px grid) */
+  --b-s-1: 4px;
+  --b-s-2: 8px;
+  --b-s-3: 12px;
+  --b-s-4: 16px;
+  --b-s-5: 24px;
+  --b-s-6: 32px;
+  --b-s-7: 48px;
+
+  /* radius: small and flat. Rows and controls 8, panels 12, the composer 14. No capsules. */
+  --b-r-control: 8px;
+  --b-r-card: 12px;
+  --b-r-field: 12px;
+  --b-r-bubble: 12px;
+  --b-r-pill: 999px;     /* dots, avatars and the smoke pills on an illustration only */
+
+  /* motion: everything comes in and goes out, cleanly */
+  --b-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --b-dur: 260ms;
+
+  color-scheme: light;
+}
+
+/* Dark is available but not the house look: record demos in light (the edit is bright). */
+[data-bright-theme="dark"] {
+  --b-bg: #141415;
+  --b-surface: #0d0d0e;
+  --b-surface-2: #1b1b1d;
+  --b-fill: rgba(255, 255, 255, 0.06);
+  --b-fill-2: rgba(255, 255, 255, 0.1);
+  --b-ink: #f2f2f3;
+  --b-ink-2: #a0a0a6;
+  --b-ink-3: #6c6c72;
+  --b-line: rgba(255, 255, 255, 0.08);
+  --b-line-2: rgba(255, 255, 255, 0.14);
+  --b-accent: #0a84ff;
+  --b-accent-bright: #409cff;
+  --b-accent-soft: rgba(10, 132, 255, 0.2);
+  --b-good: #30d158;
+  --b-bad: #ff453a;
+  --b-warn: #ff9f0a;
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------ base */
+.b-root {
+  font-family: var(--b-sans);
+  font-size: var(--b-t-body);
+  line-height: 1.45;
+  color: var(--b-ink);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.012em;
+}
+.b-root *, .b-root *::before, .b-root *::after { box-sizing: border-box; }
+.b-mono { font-family: var(--b-mono); letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.b-num { font-variant-numeric: tabular-nums; }
+.b-muted { color: var(--b-ink-2); }
+/* mono uppercase: labels, nav, timestamps, command hints ("HOW IT WORKS", "NOV 9 22:00 → NOV 10 07:00", "OPEN · TAB REPLAY") */
+.b-eyebrow, .b-label-mono { font-family: var(--b-mono); font-size: var(--b-t-caption); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--b-ink-2); }
+.b-title { font-size: var(--b-t-title); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+.b-headline { font-size: var(--b-t-headline); font-weight: 600; letter-spacing: -0.035em; line-height: 1.06; text-wrap: balance; }
+/* two-tone headline: the last words dimmed ("Incidents get fixed while your team is <still asleep.>") */
+.b-headline .b-quiet, .b-title .b-quiet { color: var(--b-ink-3); }
+.b-display { font-family: var(--b-mono); font-size: var(--b-t-display); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.b-root :focus-visible { outline: 2px solid color-mix(in srgb, var(--b-accent-bright) 60%, transparent); outline-offset: 2px; }
+
+/* ------------------------------------------------------------------ the app: one flat plane */
+.b-app {
+  position: relative;
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  background: var(--b-bg);
+  overflow: hidden;
+}
+/* sidebar: the same plane as the app, a hairline on its right. Plain rows. No pane, no pills. */
+.b-sidebar {
+  position: relative;
+  flex: none;
+  width: 264px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--b-s-3) var(--b-s-2);
+  background: var(--b-bg);
+  box-shadow: inset -1px 0 0 var(--b-line);
+  overflow-y: auto;
+}
+.b-sidebar-head { display: flex; align-items: center; gap: var(--b-s-2); height: 40px; padding: 0 var(--b-s-2) 0 10px; margin-bottom: var(--b-s-2); }
+.b-sidebar-title {
+  display: flex; align-items: center; gap: var(--b-s-2);
+  font-size: var(--b-t-caption); font-weight: 500; color: var(--b-ink-3);
+  padding: var(--b-s-4) 10px var(--b-s-1);
+}
+.b-sidebar-title .b-iconbtn { width: 24px; height: 24px; margin-left: auto; color: var(--b-ink-3); }
+.b-sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  min-height: 34px; padding: 5px 10px; border-radius: var(--b-r-control);
+  font-size: var(--b-t-small); font-weight: 450; color: var(--b-ink);
+  cursor: pointer; transition: background 160ms var(--b-ease);
+  border: 0; background: transparent; text-align: left; width: 100%; font-family: inherit; letter-spacing: -0.01em;
+}
+.b-sidebar-item:hover { background: var(--b-fill); }
+.b-sidebar-item[aria-current="true"] { background: var(--b-fill); }
+.b-sidebar-item .b-icon-dim { color: var(--b-ink-2); }
+.b-sidebar-item-text { flex: 1; min-width: 0; }
+.b-sidebar-item-label { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.b-sidebar-item-sub { display: flex; align-items: center; gap: 6px; font-size: var(--b-t-caption); color: var(--b-ink-2); margin-top: 1px; white-space: nowrap; overflow: hidden; }
+.b-sidebar-trail { font-family: var(--b-mono); font-size: var(--b-t-caption); color: var(--b-ink-3); font-variant-numeric: tabular-nums; flex: none; }
+.b-sidebar-foot { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 10px; white-space: nowrap; box-shadow: inset 0 1px 0 var(--b-line); margin-left: -8px; margin-right: -8px; padding-left: 18px; padding-right: 14px; }
+
+/* the main area: flat surface; the illustration (Backdrop) sits behind its content */
+.b-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--b-surface);
+  overflow: hidden;
+  isolation: isolate;
+}
+.b-main > :not(.b-backdrop) { position: relative; z-index: 1; }
+.b-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: var(--b-s-4) var(--b-s-6) var(--b-s-6); }
+/* top bar: a flat row of plain-text controls; no background, no divider, nothing floats */
+.b-toolbar { display: flex; align-items: center; gap: 2px; height: 52px; flex: none; padding: 0 var(--b-s-3); }
+.b-spacer { flex: 1; }
+
+/* ------------------------------------------------------------------ controls: plain text + line icon + chevron */
+/* .b-capsule keeps its old name: it's a flat text control now (no pill, no glass, no shadow) */
+.b-capsule, .b-control {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 var(--b-s-2);
+  border-radius: var(--b-r-control); border: 0; background: transparent;
+  font-family: inherit; font-size: var(--b-t-small); font-weight: 500; color: var(--b-ink); letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.b-control-label { color: var(--b-ink-2); font-weight: 450; }
+.b-control-chevron { color: var(--b-ink-3); }
+button.b-capsule, button.b-control { cursor: pointer; transition: background 160ms var(--b-ease); }
+button.b-capsule:hover, button.b-control:hover { background: var(--b-fill); }
+button.b-capsule:active, button.b-control:active { background: var(--b-fill-2); }
+/* icon buttons are bare icons */
+.b-capsule--round, .b-iconbtn {
+  display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0;
+  border: 0; border-radius: var(--b-r-control); background: transparent; color: var(--b-ink-2); cursor: pointer;
+  transition: background 160ms var(--b-ease), color 160ms var(--b-ease);
+}
+.b-capsule--round:hover, .b-iconbtn:hover { background: var(--b-fill); color: var(--b-ink); }
+/* a context chip under the composer: icon + plain text (+ chevron) */
+.b-chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 var(--b-s-2);
+  border: 0; border-radius: 6px; background: transparent; cursor: pointer;
+  font-family: inherit; font-size: 14px; font-weight: 500; color: var(--b-ink-2); white-space: nowrap;
+}
+.b-chip:hover { background: var(--b-fill); color: var(--b-ink); }
+/* a command chip: "<> /investigate" (flat, one tone step) */
+.b-cmd {
+  display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px;
+  border: 0; border-radius: var(--b-r-control); background: var(--b-surface-2); cursor: pointer;
+  font-family: inherit; font-size: var(--b-t-small); font-weight: 500; color: var(--b-ink);
+}
+.b-cmd:hover { background: color-mix(in srgb, var(--b-surface-2) 100%, black 4%); }
+.b-cmd .b-icon-dim { color: var(--b-ink-3); }
+
+/* buttons: flat fills, small radius */
+.b-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--b-s-2);
+  height: 36px; padding: 0 var(--b-s-4);
+  border-radius: var(--b-r-control); border: 0; cursor: pointer;
+  font-family: inherit; font-size: var(--b-t-small); font-weight: 600; letter-spacing: -0.01em;
+  transition: background 160ms var(--b-ease), opacity var(--b-dur) var(--b-ease);
+  white-space: nowrap;
+}
+.b-btn:disabled { opacity: 0.4; cursor: default; }
+.b-btn--primary { background: var(--b-accent); color: var(--b-on-accent); }
+.b-btn--primary:hover { background: color-mix(in srgb, var(--b-accent) 88%, black); }
+.b-btn--secondary { background: transparent; color: var(--b-ink); box-shadow: inset 0 0 0 1px var(--b-line-2); }
+.b-btn--secondary:hover { background: var(--b-fill); }
+.b-btn--plain { background: transparent; color: var(--b-ink-2); padding: 0 var(--b-s-2); font-weight: 500; }
+.b-btn--plain:hover { background: var(--b-fill); color: var(--b-ink); }
+.b-btn--danger { background: var(--b-bad-soft); color: var(--b-bad); }
+.b-btn--lg { height: 44px; padding: 0 var(--b-s-5); font-size: var(--b-t-body); }
+.b-btn--sm { height: 30px; padding: 0 var(--b-s-3); font-size: var(--b-t-caption); }
+
+/* ------------------------------------------------------------------ content */
+/* a panel: one tone step off the surface (or a hairline), radius 12, no shadow */
+.b-card {
+  border-radius: var(--b-r-card);
+  background: var(--b-surface);
+  box-shadow: inset 0 0 0 1px var(--b-line);
+  padding: var(--b-s-5);
+}
+.b-card--inset { background: var(--b-surface-2); box-shadow: none; }
+/* a flat panel over the illustration: a little translucent, blurred, still flat (no rim, no shadow) */
+.b-card--veil { background: var(--b-veil); -webkit-backdrop-filter: var(--b-veil-blur); backdrop-filter: var(--b-veil-blur); }
+.b-stack { display: flex; flex-direction: column; gap: var(--b-s-4); }
+.b-row { display: flex; align-items: center; gap: var(--b-s-3); }
+.b-grid { display: grid; gap: var(--b-s-4); grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.b-divider { height: 1px; background: var(--b-line); border: 0; margin: 0; }
+
+/* two-line list rows separated by hairlines: name, then meta with a status dot */
+.b-list { display: flex; flex-direction: column; }
+.b-list-row { display: flex; align-items: center; gap: var(--b-s-3); padding: 11px var(--b-s-2); }
+.b-list-row + .b-list-row { box-shadow: inset 0 1px 0 var(--b-line); }
+.b-list-title { font-size: var(--b-t-small); font-weight: 500; }
+.b-list-meta { display: flex; align-items: center; gap: 6px; font-size: var(--b-t-caption); color: var(--b-ink-2); margin-top: 2px; }
+.b-sdot { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--b-ink-3); }
+.b-sdot--good { background: #34c759; } .b-sdot--warn { background: #ff9f0a; } .b-sdot--bad { background: #ff3b30; } .b-sdot--accent { background: var(--b-accent-bright); }
+.b-sdot--live { animation: b-pulse 1.2s ease-in-out infinite; }
+
+/* small identity marks: an initials avatar, a gradient orb for an environment or project */
+.b-avatar { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; flex: none; background: var(--b-surface-2); box-shadow: inset 0 0 0 1px var(--b-line); font-size: 11px; font-weight: 600; color: var(--b-ink-2); letter-spacing: 0; }
+.b-orb { display: inline-block; width: 18px; height: 18px; border-radius: 5px; flex: none; }
+
+/* fields */
+.b-field {
+  width: 100%; min-height: 44px; padding: 10px var(--b-s-3);
+  border-radius: var(--b-r-field); border: 1px solid var(--b-line-2);
+  background: var(--b-surface); color: var(--b-ink);
+  font-family: inherit; font-size: var(--b-t-body); line-height: 1.4;
+  transition: border-color var(--b-dur) var(--b-ease);
+}
+.b-field::placeholder { color: var(--b-ink-3); }
+.b-field:focus { outline: none; border-color: var(--b-accent-bright); }
+.b-label { display: block; font-size: var(--b-t-caption); font-weight: 500; color: var(--b-ink-2); margin-bottom: var(--b-s-2); }
+
+/* composer: a flat bordered box. Big placeholder; its controls in a row inside the box; context chips under it. */
+.b-composer-wrap { margin: 0 auto var(--b-s-5); width: min(760px, calc(100% - 2 * var(--b-s-6))); }
+.b-composer {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 14px 12px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--b-line-2);
+  background: var(--b-veil);
+  -webkit-backdrop-filter: var(--b-veil-blur);
+  backdrop-filter: var(--b-veil-blur);
+  transition: border-color var(--b-dur) var(--b-ease);
+}
+.b-composer:focus-within { border-color: color-mix(in srgb, var(--b-accent-bright) 55%, var(--b-line-2)); }
+.b-composer textarea {
+  width: 100%; min-height: 52px; max-height: 180px; resize: none; border: 0; outline: none; background: transparent;
+  padding: 0 6px; font-family: inherit; font-size: var(--b-t-body); color: var(--b-ink); line-height: 1.4;
+}
+.b-composer textarea::placeholder { color: var(--b-ink-3); }
+.b-composer-bar { display: flex; align-items: center; gap: 2px; }
+.b-composer-chips { display: flex; align-items: center; gap: 4px; margin-top: 6px; padding: 0 4px; flex-wrap: wrap; }
+.b-send {
+  flex: none; width: 30px; height: 30px; border-radius: 7px; border: 0; cursor: pointer; margin-left: 4px;
+  display: grid; place-items: center; background: var(--b-ink); color: var(--b-surface);
+  transition: opacity var(--b-dur) var(--b-ease), background 160ms var(--b-ease);
+}
+.b-send:disabled { background: var(--b-fill-2); color: var(--b-ink-3); cursor: default; }
+
+/* messages */
+.b-thread { display: flex; flex-direction: column; gap: var(--b-s-5); max-width: 760px; margin: 0 auto; }
+.b-msg { font-size: var(--b-t-body); line-height: 1.5; animation: b-rise var(--b-dur) var(--b-ease) both; }
+.b-msg--user {
+  align-self: flex-end; max-width: 78%;
+  padding: 10px 14px; border-radius: var(--b-r-bubble);
+  background: var(--b-surface-2); color: var(--b-ink);
+}
+.b-msg--agent { align-self: stretch; }
+.b-msg--agent p { margin: 0 0 var(--b-s-3); }
+.b-msg--agent p:last-child { margin-bottom: 0; }
+
+/* streaming: words fade in, one after another (never a typewriter glitch or a glyph scramble) */
+.b-word { display: inline; animation: b-word 320ms var(--b-ease) both; }
+@keyframes b-word { from { opacity: 0; filter: blur(3px); } to { opacity: 1; filter: none; } }
+
+/* tool calls: a run log. Mono time, a dot grid while running → check, the tool in mono, detail, meta on the right */
+.b-tools { display: flex; flex-direction: column; border-radius: var(--b-r-card); box-shadow: inset 0 0 0 1px var(--b-line); padding: 4px 0; }
+.b-tools-head { display: flex; align-items: center; gap: 8px; padding: 8px var(--b-s-4) 6px; }
+.b-tool {
+  display: grid; grid-template-columns: auto 18px auto 1fr auto; align-items: center; gap: 12px;
+  min-height: 40px; padding: 0 var(--b-s-4);
+  font-size: var(--b-t-small); animation: b-rise var(--b-dur) var(--b-ease) both;
+}
+.b-tool-time { font-family: var(--b-mono); font-size: var(--b-t-caption); color: var(--b-ink-3); font-variant-numeric: tabular-nums; }
+.b-tool-name { font-family: var(--b-mono); font-size: 14px; font-weight: 600; color: var(--b-ink); letter-spacing: 0; }
+.b-tool-detail { color: var(--b-ink-2); font-family: var(--b-mono); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; letter-spacing: 0; }
+.b-tool-meta { color: var(--b-ink-2); font-family: var(--b-mono); font-size: var(--b-t-caption); font-variant-numeric: tabular-nums; }
+.b-tool-state { position: relative; width: 18px; height: 18px; color: var(--b-ink-2); }
+.b-tool-state > * { position: absolute; inset: 0; transition: opacity 220ms var(--b-ease), transform 220ms var(--b-ease); }
+.b-tool[data-state="running"] .b-ok { opacity: 0; transform: scale(0.6); }
+.b-tool[data-state="done"] .b-tool-run { opacity: 0; transform: scale(0.8); }
+.b-tool[data-state="done"] .b-ok { color: var(--b-good); }
+.b-tool[data-state="error"] .b-tool-run { opacity: 0; }
+.b-tool[data-state="error"] .b-ok { color: var(--b-bad); }
+.b-spinner {
+  border-radius: 50%; border: 2px solid var(--b-fill-2); border-top-color: var(--b-ink-2);
+  animation: b-spin 0.8s linear infinite;
+}
+@keyframes b-spin { to { transform: rotate(360deg); } }
+
+/* status: plain text with a live dot while running, a check when done */
+.b-status { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 var(--b-s-2); font-size: 14px; font-weight: 500; color: var(--b-ink-2); white-space: nowrap; }
+.b-status[data-state="done"] { color: var(--b-good); }
+.b-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--b-accent-bright); animation: b-pulse 1.2s ease-in-out infinite; }
+@keyframes b-pulse { 50% { opacity: 0.35; } }
+
+/* badges: small, flat, meaning only (good / bad / warn), the accent, or a neutral tag like "Beta" / "Pro" */
+.b-badge {
+  display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 7px;
+  border-radius: 6px; font-size: var(--b-t-caption); font-weight: 500; line-height: 1;
+  background: transparent; color: var(--b-ink-2); box-shadow: inset 0 0 0 1px var(--b-line-2);
+}
+.b-badge--good { background: var(--b-good-soft); color: var(--b-good); box-shadow: none; }
+.b-badge--bad { background: var(--b-bad-soft); color: var(--b-bad); box-shadow: none; }
+.b-badge--warn { background: var(--b-warn-soft); color: var(--b-warn); box-shadow: none; }
+.b-badge--accent { background: var(--b-accent-soft); color: var(--b-accent); box-shadow: none; }
+.b-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--b-accent-bright); color: #fff; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* stat: one number that matters */
+.b-stat { display: flex; flex-direction: column; gap: var(--b-s-1); }
+.b-stat-value { font-family: var(--b-mono); font-size: 40px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.b-stat-value--accent { color: var(--b-accent-bright); }
+.b-unit { font-family: var(--b-sans); font-size: 0.5em; font-weight: 600; letter-spacing: 0; margin-left: 0.15em; color: var(--b-ink-2); }
+.b-stat-label { font-family: var(--b-mono); font-size: var(--b-t-caption); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--b-ink-2); }
+
+/* bars: blocky, pixel segments at true scale, value at the end (no rounded lozenges) */
+.b-bars { display: flex; flex-direction: column; gap: 14px; }
+.b-bar { display: grid; grid-template-columns: 120px 1fr 80px; align-items: center; gap: var(--b-s-3); font-size: var(--b-t-small); }
+.b-bar-track { position: relative; height: 14px; }
+.b-bar-track::before, .b-bar-fill {
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 8px, transparent 8px 11px);
+  mask: repeating-linear-gradient(90deg, #000 0 8px, transparent 8px 11px);
+}
+.b-bar-track::before { content: ""; position: absolute; inset: 0; background: var(--b-fill-2); }
+.b-bar-fill { position: relative; height: 100%; background: var(--b-ink); transform-origin: left; animation: b-grow 700ms var(--b-ease) both; }
+.b-bar-fill--accent { background: var(--b-accent-bright); }
+.b-bar-value { font-family: var(--b-mono); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+@keyframes b-grow { from { transform: scaleX(0); } }
+/* a column chart of blocks (the run-log chart): <BlockChart> */
+.b-blocks { display: flex; align-items: flex-end; gap: 3px; height: 72px; }
+.b-blocks > i { flex: 1; display: block; background: var(--b-fill-2); animation: b-rise-y 500ms var(--b-ease) both; transform-origin: bottom; }
+.b-blocks > i.is-accent { background: var(--b-accent-bright); }
+.b-blocks > i.is-ink { background: var(--b-ink); }
+@keyframes b-rise-y { from { transform: scaleY(0); } }
+
+/* tables */
+.b-table { width: 100%; border-collapse: collapse; font-size: var(--b-t-small); }
+.b-table th { text-align: left; font-family: var(--b-mono); font-size: var(--b-t-caption); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--b-ink-2); padding: 0 var(--b-s-3) var(--b-s-2); }
+.b-table td { padding: 11px var(--b-s-3); box-shadow: inset 0 1px 0 var(--b-line); }
+.b-table td.b-num, .b-table th.b-num { text-align: right; font-family: var(--b-mono); }
+
+/* code */
+.b-code {
+  margin: 0; padding: var(--b-s-4) var(--b-s-5); border-radius: var(--b-r-card);
+  background: var(--b-surface-2); font-family: var(--b-mono); font-size: 14px; line-height: 1.6; overflow-x: auto;
+}
+.b-code .k { color: var(--b-accent); }
+.b-code .s { color: #1a7f3c; }
+.b-code .n { color: #8a3ffc; }
+.b-code .c { color: var(--b-ink-3); }
+
+/* tabs (Segmented): plain text, the selected one a subtle fill */
+.b-seg { display: inline-flex; gap: 2px; }
+.b-seg button {
+  height: 30px; padding: 0 10px; border: 0; border-radius: 7px; background: transparent; cursor: pointer;
+  font-family: inherit; font-size: 14px; font-weight: 500; color: var(--b-ink-2);
+  transition: background 160ms var(--b-ease), color 160ms var(--b-ease);
+}
+.b-seg button:hover { color: var(--b-ink); }
+.b-seg button[aria-pressed="true"] { background: var(--b-fill); color: var(--b-ink); }
+
+/* the house highlight: focus + one blue stroke under the exact words, no box */
+.b-hl {
+  background-image: linear-gradient(var(--b-accent-bright), var(--b-accent-bright));
+  background-repeat: no-repeat; background-position: 0 100%; background-size: 100% 3px; padding-bottom: 2px;
+  animation: b-underline 600ms var(--b-ease) both;
+}
+@keyframes b-underline { from { background-size: 0 3px; } }
+.b-dim { opacity: 0.45; transition: opacity 400ms var(--b-ease); }
+
+/* everything comes in and goes out */
+.b-enter { animation: b-rise var(--b-dur) var(--b-ease) both; }
+.b-leave { animation: b-sink 200ms var(--b-ease) both; }
+@keyframes b-rise { from { opacity: 0; transform: translateY(8px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes b-sink { to { opacity: 0; transform: translateY(6px); filter: blur(3px); } }
+
+/* ------------------------------------------------------------------ the illustration: in the background, full-bleed
+   A picture (photo or field) defocused, rendered as ASCII, halftone dots or a dither, behind the UI and bleeding off the
+   edges, fading into the surface. Never framed as a card. Content sits on the surface or on flat veil panels over it. */
+.b-backdrop { position: absolute; z-index: 0; pointer-events: none; }
+.b-backdrop > .b-blurascii { width: 100%; height: 100%; background: transparent; }
+
+.b-blurascii { position: relative; overflow: hidden; isolation: isolate; background: #8f86b8; }
+.b-blurascii-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
+.b-blurascii-content { position: relative; z-index: 1; height: 100%; color: var(--b-on-smoke); }
+/* small type straight on the picture: a logo top-left, one caption bottom-left (on the picture's darker part) */
+.b-blur-logo { font-size: 19px; font-weight: 650; letter-spacing: -0.02em; color: var(--b-on-smoke); display: inline-flex; align-items: center; gap: 8px; }
+.b-blur-caption { font-size: var(--b-t-small); line-height: 1.4; color: var(--b-on-smoke); max-width: 52ch; }
+/* on a pale part of the picture the small type turns ink: never white under 4.5 : 1 */
+.b-blur-logo--ink, .b-blur-caption--ink { color: var(--b-ink); }
+
+/* smoke: pills and rows that sit ON an illustration */
+.b-smoke {
+  background: var(--b-smoke-tint);
+  -webkit-backdrop-filter: var(--b-smoke-blur);
+  backdrop-filter: var(--b-smoke-blur);
+  box-shadow: var(--b-smoke-edge);
+  color: var(--b-on-smoke);
+}
+.b-smoke-pill {
+  display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 26px 0 18px;
+  border-radius: var(--b-r-pill); font-size: 19px; font-weight: 500; letter-spacing: -0.012em; white-space: nowrap;
+}
+.b-smoke-row {
+  display: flex; align-items: center; gap: 16px; min-height: 76px; padding: 12px 26px 12px 14px;
+  border-radius: 28px; width: 100%;
+}
+.b-smoke-disc {
+  width: 48px; height: 48px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.86); color: var(--b-ink);
+}
+.b-smoke-disc--accent { background: var(--b-accent-bright); color: var(--b-on-accent); }
+.b-smoke-disc--clear { background: rgba(255, 255, 255, 0.12); color: var(--b-on-smoke); }
+.b-smoke-text { flex: 1; min-width: 0; }
+.b-smoke-title { font-size: 19px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.b-smoke-detail { font-size: var(--b-t-small); color: var(--b-on-smoke-2); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.b-smoke-value { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* the dot-grid status icon: ripples while running, crossfades to the accent check when done */
+.b-dotgrid { position: relative; display: inline-block; flex: none; }
+.b-dotgrid > span { position: absolute; inset: 0; transition: opacity 260ms var(--b-ease), transform 260ms var(--b-ease); }
+.b-dotgrid-dots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14%; padding: 6%; }
+.b-dotgrid-dots i { border-radius: 50%; background: currentColor; animation: b-ripple 1.3s ease-in-out infinite; animation-delay: calc(var(--d) * 110ms); }
+@keyframes b-ripple { 0%, 100% { opacity: 0.28; transform: scale(0.72); } 45% { opacity: 1; transform: scale(1); } }
+.b-dotgrid[data-state="idle"] .b-dotgrid-dots i { animation: none; opacity: 0.45; }
+.b-dotgrid-check { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--b-accent-bright); color: var(--b-on-accent); opacity: 0; transform: scale(0.6); }
+.b-dotgrid[data-state="done"] .b-dotgrid-dots { opacity: 0; transform: scale(0.8); }
+.b-dotgrid[data-state="done"] .b-dotgrid-check { opacity: 1; transform: none; }
+.b-dotnumber { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .b-root *, .b-root *::before, .b-root *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}

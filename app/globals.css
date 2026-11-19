@@ -2,8 +2,48 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "tw-shimmer";
+@import "./styles/fonts.css";
+@import "./styles/bright.css";
 
-@custom-variant dark (&:is(.dark *, :root:has([data-theme="control-room"]) *));
+@custom-variant dark (&:is(.dark *));
+
+/* Bright UI v2 tokens as utilities: bg-surface, bg-surface-2, bg-plane, bg-fill, text-ink, text-ink-2, text-ink-3,
+   border-line, border-line-2, text-blue (the accent), bg-blue-soft, text-good/bad/warn, rounded-control/card/field. */
+/* Bright's type scale under Tailwind's names, so every registry component reads at recording size:
+   caption 13 · small 15 · body 17 (nothing below 13 px on screen). */
+@theme {
+  --text-xs: 13px;
+  --text-xs--line-height: 1.4;
+  --text-sm: 15px;
+  --text-sm--line-height: 1.45;
+  --text-base: 17px;
+  --text-base--line-height: 1.5;
+}
+
+@theme inline {
+  --color-plane: var(--b-bg);
+  --color-surface: var(--b-surface);
+  --color-surface-2: var(--b-surface-2);
+  --color-fill: var(--b-fill);
+  --color-fill-2: var(--b-fill-2);
+  --color-ink: var(--b-ink);
+  --color-ink-2: var(--b-ink-2);
+  --color-ink-3: var(--b-ink-3);
+  --color-line: var(--b-line);
+  --color-line-2: var(--b-line-2);
+  --color-blue: var(--b-accent-bright);
+  --color-blue-strong: var(--b-accent);
+  --color-blue-soft: var(--b-accent-soft);
+  --color-good: var(--b-good);
+  --color-good-soft: var(--b-good-soft);
+  --color-bad: var(--b-bad);
+  --color-bad-soft: var(--b-bad-soft);
+  --color-warn: var(--b-warn);
+  --color-warn-soft: var(--b-warn-soft);
+  --radius-control: var(--b-r-control);
+  --radius-card: var(--b-r-card);
+  --radius-field: var(--b-r-field);
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -68,138 +108,68 @@
   }
 }
 
-:root {
-  --app-font-sans: var(--font-geist-sans);
-  --app-font-mono: var(--font-geist-mono);
-  --signal: oklch(0.205 0 0);
-  --signal-foreground: oklch(0.985 0 0);
-  --caution: oklch(0.75 0.15 70);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
 /*
- * Control room: the main app's theme. Graphite surfaces, one signal accent,
- * IBM Plex type. Scoped with :has() so the demo pages keep the stock look and
- * portaled menus and tooltips still pick it up.
+ * Bright UI v2 (github.com/Quintui/bright-ui), the look of every demo app in Kristian's videos: one light, flat plane,
+ * surfaces one tone step apart with hairlines, ink text, one blue accent, SF Pro + SF Mono, no shadows, no glass.
+ * shadcn's variables map onto the Bright tokens, so every registry component picks it up. Hover and selection are a
+ * subtle grey fill (--accent is the fill, not blue).
  */
-:root:has([data-theme="control-room"]) {
-  color-scheme: dark;
-  --app-font-sans: var(--font-plex-sans);
-  --app-font-mono: var(--font-plex-mono);
-  --signal: oklch(0.9 0.2 124);
-  --signal-foreground: oklch(0.2 0.03 124);
-  --caution: oklch(0.8 0.14 75);
-  --radius: 0.5rem;
-
-  --background: oklch(0.165 0.004 260);
-  --foreground: oklch(0.94 0.004 260);
-  --card: oklch(0.195 0.005 260);
-  --card-foreground: oklch(0.94 0.004 260);
-  --popover: oklch(0.205 0.005 260);
-  --popover-foreground: oklch(0.94 0.004 260);
-  --primary: var(--signal);
-  --primary-foreground: var(--signal-foreground);
-  --secondary: oklch(0.23 0.006 260);
-  --secondary-foreground: oklch(0.94 0.004 260);
-  --muted: oklch(0.215 0.005 260);
-  --muted-foreground: oklch(0.67 0.01 260);
-  --accent: oklch(0.235 0.006 260);
-  --accent-foreground: oklch(0.96 0.004 260);
-  --destructive: oklch(0.68 0.19 25);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 11%);
-  --ring: oklch(0.9 0.2 124 / 55%);
-  --chart-1: var(--signal);
-  --chart-2: oklch(0.75 0.12 200);
-  --chart-3: oklch(0.8 0.14 75);
-  --chart-4: oklch(0.7 0.15 300);
-  --chart-5: oklch(0.67 0.01 260);
-  --sidebar: oklch(0.14 0.004 260);
-  --sidebar-foreground: oklch(0.9 0.004 260);
-  --sidebar-primary: var(--signal);
-  --sidebar-primary-foreground: var(--signal-foreground);
-  --sidebar-accent: oklch(0.205 0.005 260);
-  --sidebar-accent-foreground: oklch(0.96 0.004 260);
-  --sidebar-border: oklch(1 0 0 / 7%);
-  --sidebar-ring: oklch(0.9 0.2 124 / 55%);
+:root {
+  --app-font-sans: var(--b-sans);
+  --app-font-mono: var(--b-mono);
+  --signal: var(--b-accent-bright);
+  --signal-foreground: var(--b-on-accent);
+  --caution: var(--b-warn);
+  --background: var(--b-surface);
+  --foreground: var(--b-ink);
+  --card: var(--b-surface);
+  --card-foreground: var(--b-ink);
+  --popover: var(--b-surface);
+  --popover-foreground: var(--b-ink);
+  --primary: var(--b-accent);
+  --primary-foreground: var(--b-on-accent);
+  --secondary: var(--b-surface-2);
+  --secondary-foreground: var(--b-ink);
+  --muted: var(--b-surface-2);
+  --muted-foreground: var(--b-ink-2);
+  --accent: var(--b-fill);
+  --accent-foreground: var(--b-ink);
+  --destructive: var(--b-bad);
+  --border: var(--b-line);
+  --input: var(--b-line-2);
+  --ring: var(--b-accent-bright);
+  --chart-1: var(--b-accent-bright);
+  --chart-2: var(--b-ink);
+  --chart-3: var(--b-ink-2);
+  --chart-4: var(--b-good);
+  --chart-5: var(--b-ink-3);
+  --radius: 10px;
+  --sidebar: var(--b-bg);
+  --sidebar-foreground: var(--b-ink);
+  --sidebar-primary: var(--b-accent);
+  --sidebar-primary-foreground: var(--b-on-accent);
+  --sidebar-accent: var(--b-fill);
+  --sidebar-accent-foreground: var(--b-ink);
+  --sidebar-border: var(--b-line);
+  --sidebar-ring: var(--b-accent-bright);
 }
 
-:root:has([data-theme="control-room"]) ::selection {
-  background: oklch(0.9 0.2 124 / 28%);
+::selection {
+  background: var(--b-accent-soft);
 }
 
-/* A faint hairline grid behind the conversation, fading out toward the composer. */
-.control-room-grid {
-  background-image:
-    linear-gradient(to right, oklch(1 0 0 / 2.5%) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / 2.5%) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+/* flat: nothing floats or pops (shadcn and the registry components) */
+[data-slot="card"],
+[data-slot="button"],
+[data-slot="input"],
+[data-slot="textarea"],
+[data-slot="popover-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="select-content"],
+[data-slot="tooltip-content"],
+[data-slot="sidebar-inner"],
+[data-slot="sidebar-menu-button"] {
+  box-shadow: none !important;
 }
 
 @layer base {
@@ -208,6 +178,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    letter-spacing: -0.012em;
+    -webkit-font-smoothing: antialiased;
   }
   html {
     @apply font-sans;

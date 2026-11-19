@@ -217,7 +217,7 @@ export const ComposerMenu = forwardRef<
       }
       className={cn(
         floating,
-        "absolute bottom-full z-10 mb-2 flex w-72 flex-col gap-0.5 rounded-2xl p-1.5",
+        "absolute bottom-full z-10 mb-2 flex w-72 flex-col gap-0.5 rounded-[12px] p-1.5",
         align === "start"
           ? "start-0 origin-bottom-left"
           : "end-0 origin-bottom-right",
@@ -268,7 +268,7 @@ export function ComposerCommandItem({
         {command.description}
       </span>
       {active && (
-        <kbd className="bg-foreground/[0.06] text-muted-foreground rounded px-1 font-mono text-[10px]">
+        <kbd className="bg-foreground/[0.06] text-muted-foreground rounded px-1 font-mono text-[13px]">
           ↵
         </kbd>
       )}
@@ -338,7 +338,7 @@ export function ComposerAttachmentChip({
         </span>
         <span
           className={cn(
-            "text-[11px]",
+            "text-[13px]",
             attachment.state === "error"
               ? "text-red-600/80 dark:text-red-400/80"
               : "text-muted-foreground",
@@ -513,7 +513,7 @@ export function ComposerModelTrigger({
       aria-expanded={open}
       data-slot="composer-model-trigger"
       className={cn(
-        "text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground/90 dark:hover:bg-foreground/[0.09] flex h-8 items-center gap-1.5 rounded-full px-3 text-[12.5px] transition-colors",
+        "text-ink-2 hover:bg-fill hover:text-ink flex h-8 items-center gap-1.5 rounded-[8px] px-2.5 font-mono text-[13px] transition-colors",
         className,
       )}
       {...props}
@@ -571,7 +571,7 @@ export function ComposerContext({
       <div
         className={cn(
           floating,
-          "absolute end-0 bottom-full z-10 mb-2 flex w-60 origin-bottom-right flex-col gap-3.5 rounded-2xl p-4",
+          "absolute end-0 bottom-full z-10 mb-2 flex w-60 origin-bottom-right flex-col gap-3.5 rounded-[12px] p-4",
           "transition-[opacity,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
           "pointer-events-none scale-[0.97] opacity-0",
           "group-hover/ctx:pointer-events-auto group-hover/ctx:scale-100 group-hover/ctx:opacity-100",
@@ -679,7 +679,7 @@ export function ComposerVoiceButton({
         active
           ? cn(
               inkButton,
-              "flex size-8 items-center justify-center rounded-full",
+              "flex size-8 items-center justify-center rounded-[8px]",
             )
           : cn(ghostButton, "size-8"),
         className,
@@ -710,7 +710,7 @@ export function ComposerSend({
       aria-label={streaming ? "Stop generating" : "Send message"}
       data-slot="composer-send"
       className={cn(
-        "grid size-8 place-items-center rounded-full",
+        "grid size-8 place-items-center rounded-[8px]",
         streaming || !idle
           ? inkButton
           : "bg-foreground/[0.06] text-muted-foreground inset-ring-border dark:bg-foreground/[0.09] inset-ring transition-colors forced-colors:border forced-colors:border-[GrayText] forced-colors:text-[GrayText]",

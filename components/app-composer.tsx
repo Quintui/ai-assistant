@@ -292,10 +292,10 @@ export function AppComposer({ autoFocus }: { autoFocus: boolean }) {
         <ComposerPrimitive.Root
           className={cn(
             paper,
-            "focus-within:border-signal/35 flex w-full flex-col gap-2 rounded-xl p-2 shadow-[0_8px_30px_-12px_oklch(0_0_0/60%)] transition-[border-color,box-shadow] focus-within:shadow-[0_0_0_4px_oklch(0.9_0.2_124/7%),0_8px_30px_-12px_oklch(0_0_0/60%)]",
+            "border-line-2 focus-within:border-ink-3 flex w-full flex-col gap-2 rounded-[14px] p-2 transition-[border-color]",
           )}
         >
-          <ComposerPrimitive.AttachmentDropzone className="flex flex-col gap-2 rounded-lg data-[dragging=true]:bg-signal/[0.04]">
+          <ComposerPrimitive.AttachmentDropzone className="flex flex-col gap-2 rounded-lg data-[dragging=true]:bg-blue-soft">
             <AuiIf condition={(s) => s.composer.attachments.length > 0}>
               <ComposerAttachments className="px-1 pt-1">
                 <ComposerPrimitive.Attachments>{() => <AttachmentChip />}</ComposerPrimitive.Attachments>
@@ -305,7 +305,7 @@ export function AppComposer({ autoFocus }: { autoFocus: boolean }) {
               <DictationWaveform />
             </AuiIf>
             <div className="flex items-start">
-              <span aria-hidden className="text-signal ps-3 pt-[11px] font-mono text-[15px] leading-6 select-none">
+              <span aria-hidden className="text-ink-3 ps-3 pt-[11px] font-mono text-[17px] leading-6 select-none">
                 ›
               </span>
               <ComposerPrimitive.Input
@@ -313,7 +313,7 @@ export function AppComposer({ autoFocus }: { autoFocus: boolean }) {
                 rows={1}
                 autoFocus={autoFocus}
                 aria-label="Message input"
-                className="placeholder:text-muted-foreground/70 caret-signal max-h-48 min-h-11 w-full resize-none bg-transparent px-2.5 py-2.5 text-[15px] leading-6 outline-none"
+                className="placeholder:text-ink-3 caret-blue max-h-48 min-h-11 w-full resize-none bg-transparent px-2.5 py-2.5 text-[17px] leading-6 outline-none"
               />
             </div>
           </ComposerPrimitive.AttachmentDropzone>

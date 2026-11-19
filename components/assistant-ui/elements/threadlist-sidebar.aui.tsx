@@ -1,6 +1,6 @@
 import type * as React from "react";
 import Link from "next/link";
-import { ArrowUpRightIcon, ChevronsUpIcon } from "lucide-react";
+import { ArrowUpRightIcon, ChevronsUpIcon, PlayIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -18,20 +18,16 @@ export function ThreadListSidebar({
 }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="aui-sidebar-header h-12 justify-center border-b py-0">
+      <SidebarHeader className="aui-sidebar-header h-14 justify-center py-0">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="h-9">
               <Link href="/">
-                <div className="aui-sidebar-header-icon-wrapper bg-signal text-signal-foreground flex aspect-square size-6 items-center justify-center rounded-[5px] shadow-[0_0_14px] shadow-signal/35">
-                  <ChevronsUpIcon className="aui-sidebar-header-icon size-4" strokeWidth={2.5} />
-                </div>
-                <span className="aui-sidebar-header-title text-[14px] font-semibold tracking-tight">
+                <ChevronsUpIcon className="aui-sidebar-header-icon text-ink size-[18px]" strokeWidth={1.9} />
+                <span className="aui-sidebar-header-title text-[16px] font-semibold tracking-[-0.02em]">
                   Deploy Assistant
                 </span>
-                <span className="text-muted-foreground ms-auto rounded border px-1 py-px font-mono text-[10px]">
-                  v7
-                </span>
+                <span className="text-ink-3 ms-auto font-mono text-[13px]">v7</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -41,16 +37,17 @@ export function ThreadListSidebar({
         <ThreadList />
       </SidebarContent>
       {props.collapsible !== "none" && <SidebarRail />}
-      <SidebarFooter className="aui-sidebar-footer border-t">
+      <SidebarFooter className="aui-sidebar-footer border-line border-t">
         <Link
           href="/demos"
-          className="group text-muted-foreground hover:text-foreground hover:bg-sidebar-accent flex items-center justify-between rounded-md px-2 py-2 text-xs transition-colors"
+          className="group text-ink-2 hover:text-ink hover:bg-fill flex items-center gap-2.5 rounded-[8px] px-2 py-2 transition-colors"
         >
-          <span className="flex flex-col gap-0.5">
-            <span className="text-foreground font-medium">Video demos</span>
-            <span className="font-mono text-[11px]">useChat vs assistant-ui</span>
+          <PlayIcon className="text-ink-2 size-4 shrink-0" strokeWidth={1.9} />
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="text-ink text-[15px] leading-5">Video demos</span>
+            <span className="text-ink-2 text-[13px] leading-4">useChat vs assistant-ui</span>
           </span>
-          <ArrowUpRightIcon className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <ArrowUpRightIcon className="text-ink-3 size-4" />
         </Link>
       </SidebarFooter>
     </Sidebar>

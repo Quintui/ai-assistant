@@ -59,17 +59,17 @@ function describeTool(part: ToolPart, state: StepState): Step {
 function ToolStep({ step, state }: { step: Step; state: StepState }) {
   const Icon = step.icon;
   return (
-    <div className="text-muted-foreground flex items-center gap-2 text-[13.5px]">
-      <Icon className="size-3.5 shrink-0" />
+    <div className="text-ink-2 flex items-center gap-2 text-[15px]">
+      <Icon className="size-4 shrink-0" strokeWidth={1.9} />
       <ShimmerLabel active={state === "running"} className="relative inline-block leading-none">
         {step.verb}
       </ShimmerLabel>
       {step.chip && (
-        <span className="bg-foreground/[0.06] text-foreground/70 rounded-md px-1.5 py-0.5 font-mono text-[11px]">
+        <span className="bg-surface-2 text-ink rounded-[6px] px-1.5 py-0.5 font-mono text-[13px]">
           {step.chip}
         </span>
       )}
-      {state === "error" && <XIcon aria-label="Failed" className="size-3.5 text-red-600 dark:text-red-400" />}
+      {state === "error" && <XIcon aria-label="Failed" className="text-bad size-3.5" />}
       {state === "denied" && <BanIcon aria-label="Denied" className="size-3.5" />}
     </div>
   );

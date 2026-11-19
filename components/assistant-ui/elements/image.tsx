@@ -343,7 +343,7 @@ function ImageSource({
         <span
           data-slot="image-source-icon-fallback"
           aria-hidden="true"
-          className="bg-muted flex size-4 shrink-0 items-center justify-center rounded-sm text-[10px] font-medium"
+          className="bg-muted flex size-4 shrink-0 items-center justify-center rounded-sm text-[13px] font-medium"
         >
           {displayLabel.charAt(0).toUpperCase()}
         </span>

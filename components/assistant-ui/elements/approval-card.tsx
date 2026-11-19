@@ -3,7 +3,7 @@
 import { useId, type ComponentProps, type ReactNode } from "react";
 import { CheckIcon, Loader2Icon, TerminalIcon, XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { field, ghostButton, inkButton, mono, paper } from "./surfaces";
+import { field, ghostButton, mono, paper } from "./surfaces";
 import { useReceiptFocus } from "./receipt-focus";
 
 export type ApprovalState = "request" | "running" | "done" | "denied";
@@ -82,7 +82,7 @@ export function ApprovalCard({
       aria-describedby={description ? descriptionId : undefined}
       className={cn(
         paper,
-        "flex w-full max-w-sm flex-col gap-3.5 rounded-[20px] p-4",
+        "border-line flex w-full max-w-md flex-col gap-3.5 rounded-[12px] p-4",
         className,
       )}
     >
@@ -90,24 +90,24 @@ export function ApprovalCard({
         <span
           aria-hidden
           className={cn(
-            "flex size-9 shrink-0 items-center justify-center rounded-xl",
+            "flex size-9 shrink-0 items-center justify-center rounded-[8px]",
             variant === "destructive"
-              ? "bg-red-600/10 text-red-600 dark:bg-red-400/10 dark:text-red-400"
-              : "bg-foreground/[0.05] text-muted-foreground",
+              ? "bg-warn-soft text-warn"
+              : "bg-surface-2 text-ink-2",
           )}
         >
           {icon ?? <TerminalIcon className="size-4" />}
         </span>
         <div className="flex flex-col">
-          <p id={titleId} className="text-[13.5px] font-medium">
+          <p id={titleId} className="text-ink text-[15px] font-semibold">
             {title}
           </p>
-          <p className="text-muted-foreground text-xs">{subtitle}</p>
+          <p className="text-ink-2 text-[13px]">{subtitle}</p>
         </div>
       </div>
 
       {description ? (
-        <p id={descriptionId} className="text-foreground/60 text-[13px]">
+        <p id={descriptionId} className="text-ink-2 text-[15px] leading-snug">
           {description}
         </p>
       ) : null}
@@ -116,7 +116,7 @@ export function ApprovalCard({
         <div
           className={cn(
             field,
-            "text-foreground/70 rounded-xl px-3.5 py-2.5 font-mono text-xs",
+            "text-ink bg-surface-2 rounded-[8px] px-3.5 py-2.5 font-mono text-[13px]",
           )}
         >
           {command}
@@ -125,7 +125,7 @@ export function ApprovalCard({
 
       {details?.length ? (
         <dl
-          className={cn(field, "flex flex-col gap-2 rounded-xl px-3.5 py-2.5")}
+          className={cn(field, "flex flex-col gap-2 rounded-[8px] px-3.5 py-2.5")}
         >
           {details.map((detail, index) => (
             <div
@@ -151,7 +151,7 @@ export function ApprovalCard({
                 onClick={onDeny}
                 className={cn(
                   ghostButton,
-                  "h-8 px-3.5 text-xs font-medium whitespace-nowrap",
+                  "text-ink-2 h-9 px-3.5 text-[14px] font-medium whitespace-nowrap",
                 )}
               >
                 {denyLabel}
@@ -164,7 +164,7 @@ export function ApprovalCard({
                 onClick={onAlwaysAllow}
                 className={cn(
                   ghostButton,
-                  "h-8 px-3.5 text-xs font-medium whitespace-nowrap",
+                  "text-ink-2 h-9 px-3.5 text-[14px] font-medium whitespace-nowrap",
                 )}
               >
                 {alwaysAllowLabel}
@@ -176,10 +176,9 @@ export function ApprovalCard({
                 data-slot="approval-card-allow-once"
                 onClick={onAllowOnce}
                 className={cn(
-                  variant === "destructive"
-                    ? "text-background bg-red-600 transition-[background-color,scale] duration-150 hover:bg-red-600/90 active:scale-[0.96] motion-reduce:transition-none dark:bg-red-400 dark:text-red-950 dark:hover:bg-red-400/90"
-                    : inkButton,
-                  "flex h-8 items-center rounded-full px-3.5 text-xs font-medium whitespace-nowrap",
+                  // the one blue button in the view (Bright UI v2): flat, square-cornered
+                  "bg-blue-strong text-white transition-colors duration-150 hover:bg-blue-strong/90 motion-reduce:transition-none",
+                  "flex h-9 items-center rounded-[8px] px-4 text-[14px] font-medium whitespace-nowrap",
                 )}
               >
                 {allowOnceLabel}
@@ -192,7 +191,7 @@ export function ApprovalCard({
             ref={receiptRef}
             tabIndex={-1}
             role="status"
-            className="fade-in animate-in text-muted-foreground flex items-center gap-2 text-xs duration-300 motion-reduce:animate-none"
+            className="fade-in animate-in text-ink-2 flex items-center gap-2 text-[13px] duration-300 motion-reduce:animate-none"
           >
             {state === "running" ? (
               <>
@@ -206,7 +205,7 @@ export function ApprovalCard({
               </>
             ) : (
               <>
-                <CheckIcon className="size-3.5 text-emerald-500" />
+                <CheckIcon className="text-good size-3.5" />
                 {statusLabel ?? receiptText.done}
               </>
             )}
